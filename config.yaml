@@ -1,0 +1,26 @@
+name: "bluebell"
+mode: "dev"
+port: 8081
+machine_id: 1
+start_time: "2020-07-01"
+log:
+  level: "debug"
+  filename: "web_app.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+
+mysql:
+  host: "39.106.68.63"
+  port: 3306
+  user: "root"
+  password: "zhyf123456++"
+  dbname: "gorm"
+  max_open_conns: 200
+  max_idle_conns: 50
+redis:
+  host: "39.106.68.63"
+  port: 6379
+  db: 0
+  pool_size: 100
+  password: ""
