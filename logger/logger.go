@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"github.com/spf13/viper"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -9,6 +8,7 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+	"web_app_base/settings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
@@ -19,20 +19,28 @@ import (
 var lg *zap.Logger
 
 // InitLogger 初始化Logger
-func Init() (err error) {
+func Init(cfg *settings.LogConfig) (err error) {
 	writeSyncer := getLogWriter(
-		viper.GetString("log.filename"),
-		viper.GetInt("log.max_size"),
-		viper.GetInt("log.max_backups"),
-		viper.GetInt("log.max_age"))
+		cfg.Filename,
+		cfg.MaxSize,
+		cfg.MaxBackups,
+		cfg.MaxAge,
+	)
 	encoder := getEncoder()
 	var l = new(zapcore.Level)
-	err = l.UnmarshalText([]byte(viper.GetString("log.level"), ))
+	err = l.UnmarshalText([]byte(cfg.Level ))
 	if err != nil {
 		return
 	}
-	core := zapcore.NewCore(encoder, writeSyncer, l)
-
+	var core zapcore.Core
+	if cfg.Mode == "dev" {
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+		core = zapcore.NewTee(zapcore.NewCore(encoder, writeSyncer, l), // 写入日志文件
+			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel), //同时输出到终端
+		)
+	} else {
+		core = zapcore.NewCore(encoder, writeSyncer, l)
+	}
 	lg = zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(lg) // 替换zap包中全局的logger实例，后续在其他包中只需使用zap.L()调用即可
 	return

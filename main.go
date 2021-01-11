@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -11,11 +10,12 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"web_app_base/controller"
 	"web_app_base/dao/mysql"
 	"web_app_base/dao/redis"
 	"web_app_base/logger"
 	"web_app_base/pkg/snowflake"
-	"web_app_base/routes"
+	"web_app_base/router"
 	"web_app_base/settings"
 )
 
@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 	// init logger
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(settings.Conf.LogConfig); err != nil {
 		fmt.Printf("init logger failed , err :%v\n", err)
 		return
 	}
@@ -50,10 +50,17 @@ func main() {
 	}
 
 	// init routes
-	r := routes.Setup()
+	r := router.SetupRouter()
+
+	//初始化gin框架内置的校验器使用的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		fmt.Printf("init trans failed , err :%v\n", err)
+		return
+	}
+
 	//  start sever gracefully
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d", settings.Conf.Port),
 		Handler: r,
 	}
 
