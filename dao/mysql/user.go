@@ -11,6 +11,12 @@ import (
 /*
 处理用户模块的crud
 */
+var (
+	ErrorUserExist       = errors.New("用户已经存在")
+	ErrorUserNotExist    = errors.New("用户不存在")
+	ErrorInvalidPassword = errors.New("密码错误")
+)
+
 const secret = "zhyfgzm"
 
 // CheckUserExist  检查指定用户名的用户是否存在
@@ -21,7 +27,7 @@ func CheckUserExist(username string) (err error) {
 		return err
 	}
 	if count > 0 {
-		return errors.New("用户已经存在了")
+		return ErrorUserExist
 	}
 	return
 }
@@ -48,15 +54,17 @@ func Login(user *models.User) (err error) {
 	oPassword := user.Password
 	sqlStr := `select user_id , username , password from user where username = ?`
 	err = db.Get(user, sqlStr, user.Username)
+	//返回的数据为空ErrorUserNotExist
 	if err == sql.ErrNoRows {
-		return errors.New("用户不存在")
+		return ErrorUserNotExist
 	}
 	if err != nil {
 		return err
 	}
 	password := encryptPassword(oPassword)
 	if password != user.Password {
-		return errors.New("密码错误")
+		//密码不匹配 ErrorInvalidPassword
+		return ErrorInvalidPassword
 	}
 	return
 }
