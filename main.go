@@ -10,13 +10,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"web_app_base/controller"
-	"web_app_base/dao/mysql"
-	"web_app_base/dao/redis"
-	"web_app_base/logger"
-	"web_app_base/pkg/snowflake"
-	"web_app_base/router"
-	"web_app_base/settings"
+	"bluebell/controller"
+	"bluebell/dao/mysql"
+	"bluebell/dao/redis"
+	"bluebell/logger"
+	"bluebell/pkg/snowflake"
+	"bluebell/router"
+	"bluebell/settings"
 )
 
 func main() {

@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"web_app_base/dao/mysql"
-	"web_app_base/logic"
-	"web_app_base/models"
+	"bluebell/dao/mysql"
+	"bluebell/logic"
+	"bluebell/models"
 )
 
 /*
@@ -54,7 +54,6 @@ func SignInHandler(c *gin.Context) {
 	if err := c.BindJSON(&p); err != nil {
 		//参数有误 直接返回
 		zap.L().Error("SignUp with invalid param", zap.Error(err))
-
 		//判断是不是validator里面的错误类型
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
@@ -67,13 +66,20 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	// 手动检验业务
-	if err := logic.SignIn(&p); err != nil {
+	token, err := logic.SignIn(&p)
+	if err != nil {
 		zap.L().Error("logic.Sign failed ", zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserNotExist) {
 			ResponseError(c, CodeUserNotExist)
+			return
+		} else if errors.Is(err, mysql.ErrorInvalidPassword) {
+			ResponseError(c, CodeInvalidPassword)
+			return
+		} else {
+			ResponseErrorWithMsg(c, CodeServerBusy, err)
+			return
 		}
-		ResponseError(c, CodeInvalidPassword)
-		return
+
 	}
-	ResponseSuccess(c, CodeSuccess)
+	ResponseSuccess(c, token)
 }

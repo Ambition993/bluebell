@@ -4,18 +4,13 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"errors"
-	"web_app_base/models"
+	"bluebell/models"
 )
 
 /*
 处理用户模块的crud
 */
-var (
-	ErrorUserExist       = errors.New("用户已经存在")
-	ErrorUserNotExist    = errors.New("用户不存在")
-	ErrorInvalidPassword = errors.New("密码错误")
-)
+
 
 const secret = "zhyfgzm"
 
@@ -49,7 +44,7 @@ func encryptPassword(oPassword string) string {
 	return hex.EncodeToString(h.Sum([]byte(oPassword)))
 }
 
-//GetUserByUsernameAndPassword 通过username和password 获取用户
+// Login GetUserByUsernameAndPassword 通过username 获取用户 判断密码是不是相等
 func Login(user *models.User) (err error) {
 	oPassword := user.Password
 	sqlStr := `select user_id , username , password from user where username = ?`
@@ -66,5 +61,5 @@ func Login(user *models.User) (err error) {
 		//密码不匹配 ErrorInvalidPassword
 		return ErrorInvalidPassword
 	}
-	return
+	return nil
 }

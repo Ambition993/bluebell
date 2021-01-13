@@ -4,9 +4,10 @@ package logic
  处理用户模块的业务
 */
 import (
-	"web_app_base/dao/mysql"
-	"web_app_base/models"
-	"web_app_base/pkg/snowflake"
+	"bluebell/dao/mysql"
+	"bluebell/models"
+	"bluebell/pkg/jwt"
+	"bluebell/pkg/snowflake"
 )
 
 func SignUp(p *models.ParamSignUp) (err error) {
@@ -28,10 +29,15 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	return mysql.InsertUser(&u)
 }
 
-func SignIn(p *models.ParamSignIn) (err error) {
+func SignIn(p *models.ParamSignIn) (token string, err error) {
 	user := &models.User{
 		Username: p.Username,
 		Password: p.Password,
 	}
-	return mysql.Login(user)
+	if err := mysql.Login(user); err != nil {
+		return "", err
+	}
+	// user是指针在dao层里面已经被改变了 现在可以拿到userID了
+	//生成JWT
+	return jwt.GenToken(user.UserID, user.Username)
 }

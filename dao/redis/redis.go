@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"web_app_base/settings"
+	"bluebell/settings"
 )
 
 var rdb *redis.Client

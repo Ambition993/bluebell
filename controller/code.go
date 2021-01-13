@@ -3,13 +3,16 @@ package controller
 type ResCode int64
 
 const (
-    statusCode ResCode  = 1000
-	CodeSuccess = statusCode + iota
+	statusCode  ResCode = 1000
+	CodeSuccess         = statusCode + iota
 	CodeInvalidParam
 	CodeUserExist
 	CodeUserNotExist
 	CodeInvalidPassword
 	CodeServerBusy
+
+	CodeInvalidToken
+	CodeNeedLogin
 )
 
 var codeMsgMap = map[ResCode]string{
@@ -19,6 +22,8 @@ var codeMsgMap = map[ResCode]string{
 	CodeUserNotExist:    "用户名不存在",
 	CodeInvalidPassword: "密码错误",
 	CodeServerBusy:      "服务器繁忙",
+	CodeNeedLogin:       "需要登录",
+	CodeInvalidToken:    "无效的token",
 }
 
 func (c ResCode) Msg() string {

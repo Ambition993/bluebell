@@ -5,7 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
-	"web_app_base/settings"
+	"bluebell/settings"
 )
 
 // 定义一个初始化数据库的函数
