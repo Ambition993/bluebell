@@ -1,14 +1,14 @@
 package controller
 
 import (
+	"bluebell/dao/mysql"
+	"bluebell/logic"
+	"bluebell/models"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"bluebell/dao/mysql"
-	"bluebell/logic"
-	"bluebell/models"
 )
 
 /*
@@ -66,7 +66,7 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	// 手动检验业务
-	token, err := logic.SignIn(&p)
+	user, err := logic.SignIn(&p)
 	if err != nil {
 		zap.L().Error("logic.Sign failed ", zap.Error(err))
 		if errors.Is(err, mysql.ErrorUserNotExist) {
@@ -81,5 +81,11 @@ func SignInHandler(c *gin.Context) {
 		}
 
 	}
-	ResponseSuccess(c, token)
+	//返回响应
+
+	ResponseSuccess(c, gin.H{
+		"user_id":   user.UserID,
+		"user_name": user.Username,
+		"token":     user.Token,
+	})
 }

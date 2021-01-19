@@ -29,15 +29,20 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	return mysql.InsertUser(&u)
 }
 
-func SignIn(p *models.ParamSignIn) (token string, err error) {
-	user := &models.User{
+func SignIn(p *models.ParamSignIn) (user *models.User, err error) {
+	user = &models.User{
 		Username: p.Username,
 		Password: p.Password,
 	}
 	if err := mysql.Login(user); err != nil {
-		return "", err
+		return nil, err
 	}
 	// user是指针在dao层里面已经被改变了 现在可以拿到userID了
 	//生成JWT
-	return jwt.GenToken(user.UserID, user.Username)
+	token, err := jwt.GenToken(user.UserID, user.Username)
+	if err != nil {
+		return nil, err
+	}
+	user.Token = token
+	return user, nil
 }

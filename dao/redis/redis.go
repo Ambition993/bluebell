@@ -8,6 +8,7 @@ import (
 )
 
 var rdb *redis.Client
+var rz *redis.Z
 var ctx = context.Background()
 
 func Init(redisConfig *settings.RedisConfig) (err error) {

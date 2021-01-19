@@ -1,16 +1,15 @@
 package mysql
 
 import (
+	"bluebell/models"
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"bluebell/models"
 )
 
 /*
 处理用户模块的crud
 */
-
 
 const secret = "zhyfgzm"
 
@@ -62,4 +61,11 @@ func Login(user *models.User) (err error) {
 		return ErrorInvalidPassword
 	}
 	return nil
+}
+// GetUserById
+func GetUserById(uid int64) (user *models.User, err error) {
+	user = new(models.User)
+	sqlStr := `select user_id , username from user where user_id = ?`
+	err = db.Get(user, sqlStr, uid)
+	return user, err
 }
