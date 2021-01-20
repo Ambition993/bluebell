@@ -8,7 +8,9 @@ const (
 	KeyPostTimeZSet        = "post:time"   //帖子以及发布时间
 	KeyPostScoreZSet       = "post:score"  // 帖子以及帖子分数
 	KeyPostVotedZSetPrefix = "post:voted:" // 记录用户以及投票的类型 参数是post id
+	KeyCommunitySetPF      = "community:"  // 保存每个分区下面的帖子
 )
+
 // getRedisKey 给redis加上前缀
 func getRedisKey(key string) string {
 	return KeyPrefix + key

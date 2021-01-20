@@ -14,6 +14,7 @@ const (
 
 var (
 	ErrVoteTimeExpire = errors.New("投票时间已过")
+	ErrVoteRepeated   = errors.New("投票重复")
 )
 
 func VoteForPost(userID, postID string, value float64) error {
@@ -26,6 +27,11 @@ func VoteForPost(userID, postID string, value float64) error {
 	//2 更新帖子分数
 	// 先查询之前的投票记录
 	ovalue := rdb.ZScore(ctx, getRedisKey(KeyPostVotedZSetPrefix+postID), userID).Val()
+
+	// 如果这次投票的情况和之前的一样  比如之前赞成 现在也投赞成就不行
+	if ovalue == value {
+		return ErrVoteRepeated
+	}
 	// 现在 - 之前 的投票记录（正反） 得到增值方向  乘上增值的绝对值 就是增加(减少的值)
 	var op float64
 	if value > ovalue {

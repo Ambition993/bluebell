@@ -3,8 +3,7 @@ package controller
 type ResCode int64
 
 const (
-	statusCode  ResCode = 1000
-	CodeSuccess         = statusCode + iota
+	CodeSuccess ResCode = 1000 + iota
 	CodeInvalidParam
 	CodeUserExist
 	CodeUserNotExist

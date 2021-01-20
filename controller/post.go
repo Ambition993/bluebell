@@ -56,6 +56,7 @@ func GetPostDetailHandler(c *gin.Context) {
 	// 3 返回响应
 	ResponseSuccess(c, data)
 }
+
 func GetPostListHandler(c *gin.Context) {
 	//解析参数
 	page, size := getPageInfo(c)
@@ -67,5 +68,58 @@ func GetPostListHandler(c *gin.Context) {
 		return
 	}
 	// 返回数据
+	ResponseSuccess(c, data)
+}
+
+// GetPostListHandler2
+/*
+	 根据前端传来的参数 选择获取帖子的方式 （时间 分数）
+	1 获取参数
+	2 去redis里面查询id列表
+	3 根据ID去MySQL里面查询
+*/
+func GetPostListHandler2(c *gin.Context) {
+	// 获取请求参数
+	// 先预设一点默认参数
+	p := &models.ParamPostList{
+		Page: 1, Size: 10, Order: models.OrderByTime,
+	}
+	if err := c.ShouldBindQuery(p); err != nil {
+		zap.L().Error("GetPostListHandler2 with invalid param", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+
+	// 获取数据
+	data, err := logic.GetPostListBy(p)
+	if err != nil {
+		zap.L().Error(" logic.GetPostList() ", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	//返回数据
+	ResponseSuccess(c, data)
+}
+//
+func GetCommunityPostListHandler(c *gin.Context) {
+	// 初始化参数
+	var p = new(models.ParamPostList)
+	p.Page = 1
+	p.Size = 10
+	p.Order = models.OrderByTime
+
+	if err := c.ShouldBindQuery(p); err != nil {
+		zap.L().Error("GetCommunityPostListHandler with invalid param", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+	// 获取数据
+	data, err := logic.GetCommunityPostList(p)
+	if err != nil {
+		zap.L().Error(" logic.GetPostList() ", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	//返回数据
 	ResponseSuccess(c, data)
 }

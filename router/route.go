@@ -1,11 +1,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"bluebell/controller"
 	"bluebell/logger"
 	"bluebell/middleware"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func SetupRouter() *gin.Engine {
@@ -15,7 +15,7 @@ func SetupRouter() *gin.Engine {
 	//注册业务路由
 	v1.POST("/signup", controller.SignUpHandler)
 	// 登录业务路由
-	v1.POST("/signin", controller.SignInHandler)
+	v1.POST("/login", controller.SignInHandler)
 	//
 	//应用中间件
 	v1.Use(middleware.JWTAuthMiddleware())
@@ -36,6 +36,7 @@ func SetupRouter() *gin.Engine {
 		v1.POST("/post", controller.CreatePostHandler)
 		v1.GET("/post/:id", controller.GetPostDetailHandler)
 		v1.GET("/posts", controller.GetPostListHandler)
+		v1.GET("/posts2", controller.GetPostListHandler2) // 根据不同的参数 调用不同的logic
 		v1.POST("/vote", controller.PostVoteController)
 	}
 	return r
